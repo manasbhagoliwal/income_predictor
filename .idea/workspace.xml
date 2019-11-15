@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b67df1ef-2aa7-4ee7-9fb2-656a79d737ed" name="Default Changelist" comment="" />
+    <list default="true" id="b67df1ef-2aa7-4ee7-9fb2-656a79d737ed" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/adult.data.cleaned" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/cleanup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/income_predictor.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/income_predictor.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +59,10 @@
       <updated>1573410904879</updated>
       <workItem from="1573410911928" duration="1303000" />
       <workItem from="1573412751649" duration="935000" />
-      <workItem from="1573413903678" duration="431000" />
+      <workItem from="1573413903678" duration="704000" />
+      <workItem from="1573414696950" duration="43000" />
+      <workItem from="1573414959950" duration="203000" />
+      <workItem from="1573840317699" duration="2468000" />
     </task>
     <servers />
   </component>
