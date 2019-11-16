@@ -17,7 +17,7 @@ for i in range(len(dataclean)):
         count = count+1
 #print(A[0:,0:])
 
-df = pd.DataFrame(data=A[1:,0:],columns=A[0,0:])
+df = pd.DataFrame(data=A[1:,0:],columns=A[0, 0:])
 #print(df)
 #my_dict = {"Private,":"1","Self-emp-not-inc,":"2","Self-emp-inc,":"3", "Federal-gov,":"4","Local-gov,":"5","State-gov,":"6","Without-pay,":"7","Never-worked,":"8"}
 labelsEdu = df['education'].astype('category').cat.categories.tolist()
@@ -52,3 +52,9 @@ print(df_replace)
 
 #print(df_replace.info())  good for debug!!!
 #print(df_replace.dtypes) good for debug!!!
+
+df_replace_transposed = df_replace.values.T
+print(df_replace_transposed)
+y = df_replace_transposed[14]
+print(y)
+print(y.shape)
