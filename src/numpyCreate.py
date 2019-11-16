@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import classification_report, confusion_matrix
 from sklearn import svm
 dataclean = np.genfromtxt("../data/adult.data.cleaned2", dtype='str')  # created numpy with string data
 a = np.zeros((1001,15))
@@ -54,13 +56,20 @@ print(df_replace)
 #print(df_replace.dtypes) good for debug!!!
 
 df_replace_transposed = df_replace.values.T
-print(df_replace_transposed)
+# print(df_replace_transposed)
 y = df_replace_transposed[14]
 X = df_replace.values[:1000, :14]
 X = np.asarray(X).astype(int)
+y = np.asarray(y).astype(int)
 
-print(X)
+# print(X)
 # print(y)
-print(X.shape)
+# print(X.shape)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
 print(X_test.shape)
+svclassifier = SVC(kernel='linear')
+svclassifier.fit(X_train, y_train)
+
+y_pred = svclassifier.predict(X_test)
+print(confusion_matrix(y_test,y_pred))
+print(classification_report(y_test,y_pred))
