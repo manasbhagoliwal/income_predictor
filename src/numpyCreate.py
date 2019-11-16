@@ -56,5 +56,7 @@ print(df_replace)
 df_replace_transposed = df_replace.values.T
 print(df_replace_transposed)
 y = df_replace_transposed[14]
-print(y)
-print(y.shape)
+X = df_replace.values[:1000, :14]
+print(X)
+# print(y)
+print(X.shape)
