@@ -60,3 +60,5 @@ X = df_replace.values[:1000, :14]
 print(X)
 # print(y)
 print(X.shape)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
+print(X_test.shape)
