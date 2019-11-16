@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn import svm
 dataclean = np.genfromtxt("../data/adult.data.cleaned2", dtype='str')  # created numpy with string data
 a = np.zeros((1001,15))
 A = a.astype(str)
@@ -40,9 +42,10 @@ df_replace['education-num'] = df_replace['education-num'].str.replace(',', '')
 df_replace['capital-gain'] = df_replace['capital-gain'].str.replace(',', '')
 df_replace['capital-loss'] = df_replace['capital-loss'].str.replace(',', '')
 df_replace['hours-per-week'] = df_replace['hours-per-week'].str.replace(',', '')
-df_replace = df_replace.astype('int64').dtypes
+df_replace.astype('int64').dtypes
 print(df_replace)
-
+# Split the data into training and test sets
+#X_train, X_test, y_train, y_test, images_train, images_test = train_test_split(digits.data, digits.target, digits.images, test_size=0.25, random_state=42)
 
 #print(df_replace.info())  good for debug!!!
 #print(df_replace.dtypes) good for debug!!!
