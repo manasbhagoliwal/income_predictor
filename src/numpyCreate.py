@@ -44,6 +44,9 @@ df_replace['capital-loss'] = df_replace['capital-loss'].str.replace(',', '')
 df_replace['hours-per-week'] = df_replace['hours-per-week'].str.replace(',', '')
 df_replace.astype('int64').dtypes
 print(df_replace)
+
+
+
 # Split the data into training and test sets
 #X_train, X_test, y_train, y_test, images_train, images_test = train_test_split(digits.data, digits.target, digits.images, test_size=0.25, random_state=42)
 
