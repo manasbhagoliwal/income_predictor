@@ -58,6 +58,7 @@ print(df_replace_transposed)
 y = df_replace_transposed[14]
 X = df_replace.values[:1000, :14]
 X = np.asarray(X).astype(int)
+
 print(X)
 # print(y)
 print(X.shape)
