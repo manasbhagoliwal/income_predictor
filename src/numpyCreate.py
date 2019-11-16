@@ -33,7 +33,16 @@ replace_map_comp = {'education' : {k: v for k,v in zip(labelsEdu,list(range(1,le
 
 df_replace = df.copy()
 df_replace=df_replace.replace(replace_map_comp)
+#getting rid of commas in initially numerical values
+df_replace['age'] = df_replace['age'].str.replace(',', '')
+df_replace['fnlwgt'] = df_replace['fnlwgt'].str.replace(',', '')
+df_replace['education-num'] = df_replace['education-num'].str.replace(',', '')
+df_replace['capital-gain'] = df_replace['capital-gain'].str.replace(',', '')
+df_replace['capital-loss'] = df_replace['capital-loss'].str.replace(',', '')
+df_replace['hours-per-week'] = df_replace['hours-per-week'].str.replace(',', '')
+df_replace = df_replace.astype('int64').dtypes
 print(df_replace)
 
-#print(df_replace.info())  good for debug!!!
 
+#print(df_replace.info())  good for debug!!!
+#print(df_replace.dtypes) good for debug!!!
