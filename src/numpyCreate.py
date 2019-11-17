@@ -5,7 +5,7 @@ from sklearn.svm import SVC
 from sklearn.metrics import classification_report, confusion_matrix
 #from sklearn.model_selection import KFold
 dataclean = np.genfromtxt("../data/adult.data.cleaned2", dtype='str')
-a = np.zeros((1001,15)) # we need 'a' to create string numpy 'A' out of it
+a = np.zeros((1001,15))     # we need 'a' to create string numpy 'A' out of it
 A = a.astype(str)
 count = 0
 for i in range(len(dataclean)):
