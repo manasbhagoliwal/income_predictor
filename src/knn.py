@@ -98,5 +98,5 @@ for i in range(0, k):
 # Print each cv score (accuracy) and average them
 print(scores_kfold)
 npscores = np.asarray(scores_kfold)
-# printing the mean score which represents how our model will perform on a new unknown data
+# printing the mean score which represents how our model will perform on new data
 print(np.mean(npscores))
