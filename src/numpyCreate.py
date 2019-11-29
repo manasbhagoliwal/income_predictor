@@ -3,6 +3,8 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import accuracy_score
+import copy
 #from sklearn.model_selection import KFold
 dataclean = np.genfromtxt("../data/adult.data.cleaned2", dtype='str')
 a = np.zeros((1001,15))     # we need 'a' to create string numpy 'A' out of it
@@ -66,15 +68,32 @@ svclassifier = SVC(kernel='linear')
 #  print(confusion_matrix(y_train[test], y_pred))
 #  print(classification_report(y_train[test], y_pred))
 
+bestacc=0
+worstacc = 1.0
+bestSvclassifier = 0
+worstSvclassifier = 0
 #10-k fold cross-validation
 for i in range(0,10):
     T = set(range(int(np.floor((800 * i) / 10)), int(np.floor(((800 * (i + 1)) / 10) - 1)) + 1))
     S = set(range(0, 800)) - T
     svclassifier.fit(X_train[list(S)], y_train[list(S)])    # SVM learning every partition
+    ypred = svclassifier.predict(X_train[list(S)])
+    accuracy = accuracy_score(y_train[list(S)], ypred)
+    if accuracy > bestacc:
+        bestacc = accuracy
+        bestSvclassifier = copy.copy(svclassifier)
+    if accuracy < worstacc:
+        worstacc = accuracy
+        worstSvclassifier = copy.copy(svclassifier)
 
-
+print(bestacc)
 #svclassifier = SVC(kernel='linear')
 #svclassifier.fit(X_train, y_train)
-y_pred = svclassifier.predict(X_test)               # test the generated model with the test set
+y_pred = bestSvclassifier.predict(X_test)               # test the generated model with the test set
+print(confusion_matrix(y_test,y_pred))              # print the analysis report
+print(classification_report(y_test,y_pred))
+
+print(worstacc)
+y_pred = worstSvclassifier.predict(X_test)               # test the generated model with the test set
 print(confusion_matrix(y_test,y_pred))              # print the analysis report
 print(classification_report(y_test,y_pred))
