@@ -59,7 +59,25 @@ y = np.asarray(y).astype(int)
 
 # Split the data(80/20) into training and test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
-svclassifier = SVC(kernel='linear')
+
+# Spilt the 70% into two train and validation
+Xs_train, Xs_val, ys_train, ys_val = train_test_split(X_train, y_train, test_size=0.30)
+C_list = [0.1, 1, 2, 3, 4, 5, 10]
+best_err = 1.1  # Any value greater than 1
+best_C = 0.0
+for C in C_list:
+   svclassifier = SVC(kernel='linear', C=C)
+   svclassifier.fit(Xs_train, ys_train)
+   y_pred = svclassifier.predict(Xs_val)
+   err = np.mean(ys_val != np.array([y_pred]).T)
+   print("C=", C, ", err=", err)
+   if err < best_err:
+       best_err = err
+       best_C = C
+print("best_C=", best_C)
+
+svclassifier = SVC(kernel='linear', C=best_C)
+
 #  kfold = KFold(3, True, 1)
 #  for train, test in kfold.split(X_train):
 #  print('train: %s, test: %s' % (X_train[train], X_train[test]))
@@ -97,3 +115,4 @@ print(worstacc)
 y_pred = worstSvclassifier.predict(X_test)               # test the generated model with the test set
 print(confusion_matrix(y_test,y_pred))              # print the analysis report
 print(classification_report(y_test,y_pred))
+
