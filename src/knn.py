@@ -62,41 +62,69 @@ X = df_replace.values[:1000, :14]
 X = np.asarray(X).astype(int)
 y = np.asarray(y).astype(int)
 
-
-
-
-
 #           KNN Implementation
 
+#           First find the best k for knn
+k_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
 
+# Split the data(70/30) into training and test sets
+X_big, X_test, y_big, y_test = train_test_split(X, y, test_size=0.30)
 
+# Spilt the 70% into two train and validation
+X_train, X_val, y_train, y_val = train_test_split(X_big, y_big, test_size=0.30)
 
+best_err = 1.1  # Any value greater than 1
+best_k = 0.0
+for k in k_list:
+    alg = KNeighborsClassifier(n_neighbors=k, algorithm='brute')
+    alg.fit(X_train, y_train)
+    y_pred = alg.predict(X_val)
+    err = np.mean(y_val != np.array([y_pred]).T)
+    print("k=", k, ", err=", err)
+    if err < best_err:
+        best_err = err
+        best_k = k
+print("best_k=", best_k)
 
+alg = KNeighborsClassifier(n_neighbors=best_k, algorithm='brute')
+alg.fit(X_train, y_train)
+y_pred = alg.predict(X_test)
+err = np.mean(y_test != np.array([y_pred]).T)
 
+print(err)
 
+#  K fold cross validation using the best k found above
 
 
 # Split the data(80/20) into training and test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
 
 # Create KNN classifier
-knn = KNeighborsClassifier(n_neighbors=5)
+knn = KNeighborsClassifier(n_neighbors=best_k, algorithm='brute')
 
 (n, d) = np.shape(X_train)
 k = 10
 # a list which carries the score from each kfolds
 scores_kfold = list()
+best_score = 0.0
+bfoldknn = 0.0
 
 # kfold with k = 10
 for i in range(0, k):
-    T = set(range(int(np.floor((n * i)/k)), int(np.floor(((n * (i + 1)) / k) - 1)) + 1))
+    T = set(range(int(np.floor((n * i) / k)), int(np.floor(((n * (i + 1)) / k) - 1)) + 1))
     S = set(range(0, n)) - T
-    knn.fit(X_train[list(S)], y_train[list(S)])
-    scores_kfold.append(knn.score(X_train[list(T)], y_train[list(T)]))
-
+    temp_model = knn.fit(X_train[list(S)], y_train[list(S)])
+    sc = knn.score(X_train[list(T)], y_train[list(T)])
+    if(sc > best_score):
+        bfoldknn = temp_model
+        best_score = sc
+    scores_kfold.append(sc)
 
 # Print each cv score (accuracy) and average them
 print(scores_kfold)
+final_score = bfoldknn.score(X_test, y_test)
+print("Final score = ", final_score)
 npscores = np.asarray(scores_kfold)
+
 # printing the mean score which represents how our model will perform on new data
-print(np.mean(npscores))
+# print(np.mean(npscores))
