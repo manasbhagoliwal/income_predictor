@@ -5,14 +5,16 @@ from sklearn.svm import SVC
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.metrics import accuracy_score
 import copy
+import matplotlib.pyplot as plt
+
 #from sklearn.model_selection import KFold
 dataclean = np.genfromtxt("../data/adult.data.cleaned2", dtype='str')
 a = np.zeros((1001,15))     # we need 'a' to create string numpy 'A' out of it
 A = a.astype(str)
 count = 0
 for i in range(len(dataclean)):
-        A[count]=dataclean[i]
-        count = count+1
+    A[count]=dataclean[i]
+    count = count+1
 #print(A[0:,0:])
 
 df = pd.DataFrame(data=A[1:,0:],columns=A[0, 0:]) # creating dataframes and setting up the columns
@@ -60,23 +62,80 @@ y = np.asarray(y).astype(int)
 # Split the data(80/20) into training and test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
 
-# Spilt the 70% into two train and validation
+
+# Split the 70% into two train and validation
 Xs_train, Xs_val, ys_train, ys_val = train_test_split(X_train, y_train, test_size=0.30)
-C_list = [0.1, 1, 2, 3, 4, 5, 10]
+Xs_train2, Xs_val2, ys_train2, ys_val2 = train_test_split(Xs_train, ys_train, test_size=0.30)
+Xs_train3, Xs_val3, ys_train3, ys_val3 = train_test_split(Xs_train2, ys_train2, test_size=0.30)
+Xs_train4, Xs_val4, ys_train4, ys_val4 = train_test_split(Xs_train3, ys_train3, test_size=0.30)
+
+print(len(X_train))
+print(len(Xs_train))
+print(len(Xs_train2))
+print(len(Xs_train3))
+
+# C_list = [0.1, 1, 2, 3, 4, 5, 10]
+C_list = [0.1, 1, 2]
 best_err = 1.1  # Any value greater than 1
+best_err2 = 1.1
+best_err3 = 1.1
+best_err4 = 1.1
 best_C = 0.0
+best_C2 = 0.0
+best_C3 = 0.0
+best_C4 = 0.0
+
 for C in C_list:
-   svclassifier = SVC(kernel='linear', C=C)
-   svclassifier.fit(Xs_train, ys_train)
-   y_pred = svclassifier.predict(Xs_val)
-   err = np.mean(ys_val != np.array([y_pred]).T)
-   print("C=", C, ", err=", err)
-   if err < best_err:
-       best_err = err
-       best_C = C
+    svclassifier = SVC(kernel='linear', C=C)
+    svclassifier2 = SVC(kernel='linear', C=C)
+    svclassifier3 = SVC(kernel='linear', C=C)
+    svclassifier4 = SVC(kernel='linear', C=C)
+
+    # Sample 1
+    svclassifier.fit(Xs_train, ys_train)
+    y_pred = svclassifier.predict(Xs_val)
+    err = np.mean(ys_val != np.array([y_pred]).T)
+    # Sample 2
+    svclassifier2.fit(Xs_train2, ys_train2)
+    y_pred2 = svclassifier2.predict(Xs_val2)
+    err2 = np.mean(ys_val2 != np.array([y_pred2]).T)
+    # Sample 3
+    svclassifier3.fit(Xs_train3, ys_train3)
+    y_pred3 = svclassifier3.predict(Xs_val3)
+    err3 = np.mean(ys_val3 != np.array([y_pred3]).T)
+    # Sample 4
+    svclassifier4.fit(Xs_train4, ys_train4)
+    y_pred4 = svclassifier4.predict(Xs_val4)
+    err4 = np.mean(ys_val4 != np.array([y_pred4]).T)
+
+    print("C=", C, ", err=", err)
+    print("C=", C, ", err2=", err2)
+    print("C=", C, ", err3=", err3)
+    print("C=", C, ", err4=", err4)
+
+    if err < best_err:
+        best_err = err
+        best_C = C
+    if err2 < best_err2:
+        best_err2 = err2
+        best_C2 = C
+    if err3 < best_err3:
+        best_err3 = err3
+        best_C3 = C
+    if err4 < best_err4:
+        best_err4 = err4
+        best_C4 = C
+
 print("best_C=", best_C)
+print("best_C=", best_C2)
+print("best_C=", best_C3)
+print("best_C=", best_C4)
 
 svclassifier = SVC(kernel='linear', C=best_C)
+svclassifier2 = SVC(kernel='linear', C=best_C2)
+svclassifier3 = SVC(kernel='linear', C=best_C3)
+svclassifier4 = SVC(kernel='linear', C=best_C4)
+
 
 #  kfold = KFold(3, True, 1)
 #  for train, test in kfold.split(X_train):
@@ -87,31 +146,97 @@ svclassifier = SVC(kernel='linear', C=best_C)
 #  print(classification_report(y_train[test], y_pred))
 
 bestacc=0
+bestacc2=0
+bestacc3=0
+bestacc4=0
 worstacc = 1.0
+worstacc2 = 1.0
+worstacc3 = 1.0
+worstacc4 = 1.0
 bestSvclassifier = 0
+bestSvclassifier2 = 0
+bestSvclassifier3 = 0
+bestSvclassifier4 = 0
 worstSvclassifier = 0
+worstSvclassifier2 = 0
+worstSvclassifier3 = 0
+worstSvclassifier4 = 0
+
 #10-k fold cross-validation
-for i in range(0,10):
-    T = set(range(int(np.floor((800 * i) / 10)), int(np.floor(((800 * (i + 1)) / 10) - 1)) + 1))
+for i in range(0, 6):
+    T = set(range(int(np.floor((800 * i) / 3)), int(np.floor(((800 * (i + 1)) / 3) - 1)) + 1))
+    T2 = set(range(int(np.floor((560 * i) / 3)), int(np.floor(((560 * (i + 1)) / 3) - 1)) + 1))
+    T3 = set(range(int(np.floor((392 * i) / 3)), int(np.floor(((392 * (i + 1)) / 3) - 1)) + 1))
+    T4 = set(range(int(np.floor((274 * i) / 3)), int(np.floor(((274 * (i + 1)) / 3) - 1)) + 1))
     S = set(range(0, 800)) - T
+    S2 = set(range(0, 560)) - T2
+    S3 = set(range(0, 392)) - T3
+    S4 = set(range(0, 274)) - T4
+
+    # Sample 1
     svclassifier.fit(X_train[list(S)], y_train[list(S)])    # SVM learning every partition
     ypred = svclassifier.predict(X_train[list(S)])
     accuracy = accuracy_score(y_train[list(S)], ypred)
+    # Sample 2
+    svclassifier2.fit(Xs_train[list(S2)], ys_train[list(S2)])    # SVM learning every partition
+    ypred2 = svclassifier2.predict(Xs_train[list(S2)])
+    accuracy2 = accuracy_score(ys_train[list(S2)], ypred2)
+    # Sample 3
+    svclassifier3.fit(Xs_train2[list(S3)], ys_train2[list(S3)])    # SVM learning every partition
+    ypred3 = svclassifier3.predict(Xs_train2[list(S3)])
+    accuracy3 = accuracy_score(ys_train2[list(S3)], ypred3)
+    # Sample 4
+    svclassifier4.fit(Xs_train3[list(S4)], ys_train3[list(S4)])    # SVM learning every partition
+    ypred4 = svclassifier4.predict(Xs_train3[list(S4)])
+    accuracy4 = accuracy_score(ys_train3[list(S4)], ypred4)
+
     if accuracy > bestacc:
         bestacc = accuracy
         bestSvclassifier = copy.copy(svclassifier)
+    if accuracy2 > bestacc2:
+        bestacc2 = accuracy2
+        bestSvclassifier2 = copy.copy(svclassifier2)
+    if accuracy3 > bestacc3:
+        bestacc3 = accuracy3
+        bestSvclassifier3 = copy.copy(svclassifier3)
+    if accuracy4 > bestacc4:
+        bestacc4 = accuracy4
+        bestSvclassifier4 = copy.copy(svclassifier4)
+
     if accuracy < worstacc:
         worstacc = accuracy
         worstSvclassifier = copy.copy(svclassifier)
+    if accuracy2 < worstacc2:
+        worstacc2 = accuracy2
+        worstSvclassifier2 = copy.copy(svclassifier2)
+    if accuracy3 < worstacc3:
+        worstacc3 = accuracy3
+        worstSvclassifier3 = copy.copy(svclassifier3)
+    if accuracy4 < worstacc4:
+        worstacc4 = accuracy4
+        worstSvclassifier4 = copy.copy(svclassifier4)
 
 print(bestacc)
-#svclassifier = SVC(kernel='linear')
-#svclassifier.fit(X_train, y_train)
+print(bestacc2)
+print(bestacc3)
+print(bestacc4)
+
+# Print sample size vs accuracy graph
+sizes = [len(X_train), len(Xs_train), len(Xs_train2), len(Xs_train3)]  # x-values
+accuracies = [bestacc, bestacc2, bestacc3, bestacc4]  # y-values
+plt.plot(sizes, accuracies)
+plt.xlabel("Sample Size")
+plt.ylabel("Accuracy")
+plt.title("Sample Size x Accuracy Plot")
+plt.show()
+
+# svclassifier = SVC(kernel='linear')
+# svclassifier.fit(X_train, y_train)
 y_pred = bestSvclassifier.predict(X_test)               # test the generated model with the test set
 print(confusion_matrix(y_test,y_pred))              # print the analysis report
 print(classification_report(y_test,y_pred))
 
-print(worstacc)
+# print(worstacc)
 y_pred = worstSvclassifier.predict(X_test)               # test the generated model with the test set
 print(confusion_matrix(y_test,y_pred))              # print the analysis report
 print(classification_report(y_test,y_pred))
