@@ -178,8 +178,8 @@ alg3 = KNeighborsClassifier(n_neighbors=best_k3, algorithm='brute')
 alg4 = KNeighborsClassifier(n_neighbors=best_k4, algorithm='brute')
 
 alg.fit(X_train, y_train)
-probs = alg.predict_proba(X_test)
-probs = probs[:, 1]
+# probs = alg.predict_proba(X_test)
+# probs = probs[:, 1]
 y_pred = alg.predict(X_test)
 err = np.mean(y_test != np.array([y_pred]).T)
 
@@ -199,18 +199,18 @@ print(err3)
 print(err4)
 
 
-auc = roc_auc_score(y_test, probs)
-print('Model: ROC AUC=%.7f' % auc)
-fpr, tpr, _ = roc_curve(y_test, probs, 2)
-plt.plot(fpr, tpr, marker='.', label='Model')
-plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
-plt.xlim([0.0, 1.0])
-plt.ylim([0.0, 1.05])
-plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive Rate')
-plt.title('Receiver Operating Characteristic (ROC)')
-plt.legend(loc="lower right")
-plt.show()
+# auc = roc_auc_score(y_test, probs)
+# print('Model: ROC AUC=%.7f' % auc)
+# fpr, tpr, _ = roc_curve(y_test, probs, 2)
+# plt.plot(fpr, tpr, marker='.', label='Model')
+# plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+# plt.xlim([0.0, 1.0])
+# plt.ylim([0.0, 1.05])
+# plt.xlabel('False Positive Rate')
+# plt.ylabel('True Positive Rate')
+# plt.title('Receiver Operating Characteristic (ROC)')
+# plt.legend(loc="lower right")
+# plt.show()
 
 
 #  K fold cross validation using the best k found above
@@ -285,6 +285,10 @@ for i in range(0, k):
     scores_kfold4.append(sc4)
 
 # Print each cv score (accuracy) and average them
+
+probs = knn.predict_proba(X_test)
+probs = probs[:, 1]
+
 print(scores_kfold)
 print(scores_kfold2)
 print(scores_kfold3)
@@ -321,4 +325,18 @@ plt.plot(sizes, accuracies)
 plt.xlabel("Sample Size")
 plt.ylabel("Accuracy")
 plt.title("Sample Size x Accuracy Plot")
+plt.show()
+
+
+auc = roc_auc_score(y_test, probs)
+print('Model: ROC AUC=%.7f' % auc)
+fpr, tpr, _ = roc_curve(y_test, probs, 2)
+plt.plot(fpr, tpr, marker='.', label='Model')
+plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic (ROC)')
+plt.legend(loc="lower right")
 plt.show()
