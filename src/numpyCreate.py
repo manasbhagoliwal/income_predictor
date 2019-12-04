@@ -3,7 +3,6 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.metrics import classification_report, confusion_matrix
-from sklearn.metrics import accuracy_score
 import copy
 import matplotlib.pyplot as plt
 
@@ -70,10 +69,10 @@ Xs_train3, Xs_val3, ys_train3, ys_val3 = train_test_split(Xs_train[:50], ys_trai
 Xs_train4, Xs_val4, ys_train4, ys_val4 = train_test_split(Xs_train[:10], ys_train[:10], test_size=0.30)
 
 
-print(len(X_train))
-print(len(Xs_train))
-print(len(Xs_train2))
-print(len(Xs_train3))
+#print(len(X_train))
+#print(len(Xs_train))
+#print(len(Xs_train2))
+#print(len(Xs_train3))
 
 # C_list = [0.1, 1, 2, 3, 4, 5, 10]
 C_list = [0.1, 1, 2, 10]
@@ -86,6 +85,7 @@ best_C2 = 0.0
 best_C3 = 0.0
 best_C4 = 0.0
 
+#Hyperparameter tuning for C in SVM using training/validation/test
 for C in C_list:
     svclassifier = SVC(kernel='linear', C=C)
     svclassifier2 = SVC(kernel='linear', C=C)
@@ -132,6 +132,7 @@ print("best_C=", best_C2)
 print("best_C=", best_C3)
 print("best_C=", best_C4)
 
+# Creating new SVMs with best C's, svclassifier will be used for predicting result and building graphs, other ones just for building graphs
 svclassifier = SVC(kernel='linear', C=best_C)
 svclassifier2 = SVC(kernel='linear', C=best_C2)
 svclassifier3 = SVC(kernel='linear', C=best_C3)
@@ -168,8 +169,7 @@ bestSvclassifier4 = 0
 
 
 #10-k fold cross-validation
-
-k = 3
+k = 10
 for i in range(0, k):
     T = set(range(int(np.floor((800 * i) / k)), int(np.floor(((800 * (i + 1)) / k) - 1)) + 1))
     T2 = set(range(int(np.floor((560 * i) / k)), int(np.floor(((560 * (i + 1)) / k) - 1)) + 1))
@@ -221,16 +221,14 @@ print(bestacc3)
 print(bestacc4)
 
 # Print sample size vs accuracy graph
-sizes = [len(X_train), len(Xs_train), len(Xs_train2), len(Xs_train3)]  # x-values
-accuracies = [bestacc, bestacc2, bestacc3, bestacc4]  # y-values
-plt.plot(sizes, accuracies)
-plt.xlabel("Sample Size")
-plt.ylabel("Accuracy")
-plt.title("Sample Size x Accuracy Plot")
-plt.show()
+#sizes = [len(X_train), len(Xs_train), len(Xs_train2), len(Xs_train3)]  # x-values
+#accuracies = [bestacc, bestacc2, bestacc3, bestacc4]  # y-values
+#plt.plot(sizes, accuracies)
+#plt.xlabel("Sample Size")
+#plt.ylabel("Accuracy")
+#plt.title("Sample Size x Accuracy Plot")
+#plt.show()
 
-# svclassifier = SVC(kernel='linear')
-# svclassifier.fit(X_train, y_train)
 y_pred = bestSvclassifier.predict(X_test)               # test the generated model with the test set
 print(confusion_matrix(y_test,y_pred))              # print the analysis report
 print(classification_report(y_test,y_pred))
