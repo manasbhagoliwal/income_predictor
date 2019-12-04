@@ -139,10 +139,12 @@ for k in k_list:
     tn.append(tnt)
     fp.append(fpt)
 # print the error for each sample size and each value of k
-#    print("k=", k, ", err=", err)
-#    print("k=", k, ", err2=", err2)
-#    print("k=", k, ", err3=", err3)
-#    print("k=", k, ", err4=", err4)
+
+    print("k=", k, ", err=", err)
+    print("k=", k, ", err2=", err2)
+    print("k=", k, ", err3=", err3)
+    print("k=", k, ", err4=", err4)
+
     if err < best_err:
         best_err = err
         best_k = k
@@ -157,73 +159,26 @@ for k in k_list:
         best_k4 = k
 
 i = 0
-x = np.linspace(0, 1, num=100)
 fpr = list()  # x-axis
 tpr = list()  # y-axis
-for i in range(0, k):
+fpr.append(1)
+tpr.append(1)
+for i in range(0, len(fp)):
     fpr.append(fp[i]/(fp[i] + tn[i]))
     tpr.append(tp[i]/(tp[i] + fn[i]))
 fpr.append(0)
-fpr.append(1)
 tpr.append(0)
-tpr.append(1)
-auc = np.sum(tpr)/len(tpr)
-# print(auc, fpr, tpr)
 
+auc = np.sum(tpr)/len(tpr) + 0.5 - np.sum(fpr)/len(fpr)
 plt.plot(fpr, tpr, color='red', lw=2, label='ROC (AUC = %0.8f)' % auc)
-# plt.plot(0, 0)
-# # plt.plot(1, 1)
-plt.plot(x, x, "--")
 plt.xlim([0, 1])
 plt.ylim([0, 1])
-# plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+plt.plot([0, 1], [0, 1], linestyle='--')
 plt.xlabel("False Positive Rate")
 plt.ylabel("True Positive Rare")
 plt.title("FPR x TPR")
-plt.grid()
+plt.legend(loc="lower right")
 plt.show()
-
-# auc = sklearn.metrics.auc(fpr, tpr)
-#print(fpr)
-# print(auc)
-
-# fpr = dict()
-# tpr = dict()
-# roc_auc = dict()
-#
-# # Compute ROC curve and ROC area for each class
-# for i in range(0, 2):
-#     fpr[i], tpr[i], labels = roc_curve(y_val, y_pred, 1+i)
-#     roc_auc[i] = auc(fpr[i], tpr[i])
-#
-# print("kkkkkkkk")
-#
-# print(y_test)
-#
-# print("kkkkkkkk")
-#
-# print(y_pred)
-#
-# print(fpr, " auuuu ", tpr)
-# print(roc_auc)
-
-# Compute micro-average ROC curve and ROC area
-# fpr["micro"], tpr["micro"], _ = roc_curve(y_val.ravel(), y_pred.ravel(), 2)
-# roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
-
-# print(roc_auc)
-#
-# plt.figure()
-# lw = 2
-# plt.plot(fpr[1], tpr[1], color='red', lw=lw, label='ROC curve (area = %0.8f)' % roc_auc[1])
-# plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
-# plt.xlim([0.0, 1.0])
-# plt.ylim([0.0, 1.05])
-# plt.xlabel('False Positive Rate')
-# plt.ylabel('True Positive Rate')
-# plt.title('Receiver Operating Characteristic (ROC)')
-# plt.legend(loc="lower right")
-# plt.show()
 
 print("best_k for sample 1 = ", best_k)
 print("best_k for sample 2 = ", best_k2)
@@ -231,27 +186,14 @@ print("best_k for sample 3 = ", best_k3)
 print("best_k for sample 4 = ", best_k4)
 
 
-# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Look at this box >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 alg = KNeighborsClassifier(n_neighbors=best_k, algorithm='brute')
 alg2 = KNeighborsClassifier(n_neighbors=best_k2, algorithm='brute')
 alg3 = KNeighborsClassifier(n_neighbors=best_k3, algorithm='brute')
 alg4 = KNeighborsClassifier(n_neighbors=best_k4, algorithm='brute')
 
 alg.fit(X_train, y_train)
-probs = alg.predict_proba(X_test)
-# print("wejdwned")
-#print(probs)
-
-probs = probs[:, 1]
-
-#print(probs)
-
-
-
-
 y_pred = alg.predict(X_test)
 err = np.mean(y_test != np.array([y_pred]).T)
-
 alg2.fit(X_train2, y_train2)
 y_pred2 = alg2.predict(X_test)
 err2 = np.mean(y_test != np.array([y_pred2]).T)
@@ -261,33 +203,14 @@ err3 = np.mean(y_test != np.array([y_pred3]).T)
 alg4.fit(X_train4, y_train4)
 y_pred4 = alg4.predict(X_test)
 err4 = np.mean(y_test != np.array([y_pred4]).T)
-print("Do we need this print>>>>>")
 
 print(err)
 print(err2)
 print(err3)
 print(err4)
 
-print("^^^^^^^^^Do we need this print?^^^^^^^^^^^^")
-
-# auc = roc_auc_score(y_test, probs)
-# print('Model: ROC AUC=%.7f' % auc)
-# fpr, tpr, _ = roc_curve(y_test, probs, 2)
-# plt.plot(fpr, tpr, marker='.', label='Model')
-# plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
-# plt.xlim([0.0, 1.0])
-# plt.ylim([0.0, 1.05])
-# plt.xlabel('False Positive Rate')
-# plt.ylabel('True Positive Rate')
-# plt.title('Receiver Operating Characteristic (ROC)')
-# plt.legend(loc="lower right")
-# plt.show()
-
-
-#       <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Box ends >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 #  K fold cross validation using the best k found above
-
 
 # Create KNN classifier
 knn = KNeighborsClassifier(n_neighbors=best_k, algorithm='brute')
@@ -365,10 +288,10 @@ npscores4 = np.asarray(scores_kfold4)
 
 
 # printing the mean score which represents how our model will perform on new data
-print(" mean accuracy on kfoldcv for sample 1 = ",np.mean(npscores))
-print(" mean accuracy on kfoldcv for sample 2 = ",np.mean(npscores2))
-print(" mean accuracy on kfoldcv for sample 3 = ",np.mean(npscores3))
-print(" mean accuracy on kfoldcv for sample 4 = ",np.mean(npscores4))
+print(" mean accuracy on kfoldcv for sample 1 = ", np.mean(npscores))
+print(" mean accuracy on kfoldcv for sample 2 = ", np.mean(npscores2))
+print(" mean accuracy on kfoldcv for sample 3 = ", np.mean(npscores3))
+print(" mean accuracy on kfoldcv for sample 4 = ", np.mean(npscores4))
 
 print("--------------------------------------------------------------")
 # Final score is based on the best k found and best model found in the kfold cv
@@ -377,35 +300,17 @@ final_score2 = bfoldknn2.score(X_test, y_test)
 final_score3 = bfoldknn3.score(X_test, y_test)
 final_score4 = bfoldknn4.score(X_test, y_test)
 print("best accuracy in kfoldcv for sample 1 =", final_score)
-print("best accuracy in kfoldcv for sample 1 =", final_score2)
-print("best accuracy in kfoldcv for sample 1 =", final_score3)
-print("best accuracy in kfoldcv for sample 1 =", final_score4)
-
+print("best accuracy in kfoldcv for sample 2 =", final_score2)
+print("best accuracy in kfoldcv for sample 3 =", final_score3)
+print("best accuracy in kfoldcv for sample 4 =", final_score4)
 
 
 # Print sample size vs accuracy graph
 sizes = [len(X_train), len(X_train2), len(X_train3), len(X_train4)]  # x-values
 accuracies = [np.mean(npscores), np.mean(npscores2), np.mean(npscores3), np.mean(npscores4)]  # y-values
-# accuracies = [final_score, final_score2, final_score3, final_score4]  # y-values
 plt.plot(sizes, accuracies)
 plt.xlabel("Sample Size")
 plt.ylabel("Accuracy")
 plt.title("Sample Size x Accuracy Plot")
 plt.show()
 
-
-
-
-# printing the ROC curve
-auc = roc_auc_score(y_test, probs)
-print('Model: ROC AUC=%.7f' % auc)
-fpr, tpr, _ = roc_curve(y_test, probs, 2)
-plt.plot(fpr, tpr, marker='.', label='Model')
-plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-plt.xlim([0.0, 1.0])
-plt.ylim([0.0, 1.05])
-plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive Rate')
-plt.title('Receiver Operating Characteristic (ROC)')
-plt.legend(loc="lower right")
-plt.show()

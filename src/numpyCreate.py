@@ -68,11 +68,10 @@ Xs_train2, Xs_val2, ys_train2, ys_val2 = train_test_split(Xs_train[:100], ys_tra
 Xs_train3, Xs_val3, ys_train3, ys_val3 = train_test_split(Xs_train[:50], ys_train2[:50], test_size=0.30)
 Xs_train4, Xs_val4, ys_train4, ys_val4 = train_test_split(Xs_train[:10], ys_train[:10], test_size=0.30)
 
-
-#print(len(X_train))
-#print(len(Xs_train))
-#print(len(Xs_train2))
-#print(len(Xs_train3))
+print(len(X_train))
+print(len(Xs_train))
+print(len(Xs_train2))
+print(len(Xs_train3))
 
 # C_list = [0.1, 1, 2, 3, 4, 5, 10]
 C_list = [0.1, 1, 2, 10]
@@ -156,7 +155,6 @@ plt.ylabel("Accuracy")
 plt.title("Sample Size x Accuracy Plot")
 plt.show()
 
-
 bestacc=0
 bestacc2=0
 bestacc3=0
@@ -171,14 +169,14 @@ bestSvclassifier4 = 0
 #10-k fold cross-validation
 k = 10
 for i in range(0, k):
-    T = set(range(int(np.floor((800 * i) / k)), int(np.floor(((800 * (i + 1)) / k) - 1)) + 1))
-    T2 = set(range(int(np.floor((560 * i) / k)), int(np.floor(((560 * (i + 1)) / k) - 1)) + 1))
-    T3 = set(range(int(np.floor((70 * i) / k)), int(np.floor(((70 * (i + 1)) / k) - 1)) + 1))
-    T4 = set(range(int(np.floor((35 * i) / k)), int(np.floor(((35 * (i + 1)) / k) - 1)) + 1))
-    S = set(range(0, 800)) - T
-    S2 = set(range(0, 560)) - T2
-    S3 = set(range(0, 70)) - T3
-    S4 = set(range(0, 35)) - T4
+    T = set(range(int(np.floor((len(X_train) * i) / k)), int(np.floor(((len(X_train) * (i + 1)) / k) - 1)) + 1))
+    T2 = set(range(int(np.floor((len(Xs_train) * i) / k)), int(np.floor(((len(Xs_train) * (i + 1)) / k) - 1)) + 1))
+    T3 = set(range(int(np.floor((len(Xs_train2) * i) / k)), int(np.floor(((len(Xs_train2) * (i + 1)) / k) - 1)) + 1))
+    T4 = set(range(int(np.floor((len(Xs_train3) * i) / k)), int(np.floor(((len(Xs_train3) * (i + 1)) / k) - 1)) + 1))
+    S = set(range(0, len(X_train))) - T
+    S2 = set(range(0, len(Xs_train))) - T2
+    S3 = set(range(0, len(Xs_train2))) - T3
+    S4 = set(range(0, len(Xs_train3))) - T4
 
     # Sample 1
     svclassifier.fit(X_train[list(T)], y_train[list(T)])    # SVM learning every partition
@@ -219,15 +217,6 @@ print(bestacc)
 print(bestacc2)
 print(bestacc3)
 print(bestacc4)
-
-# Print sample size vs accuracy graph
-#sizes = [len(X_train), len(Xs_train), len(Xs_train2), len(Xs_train3)]  # x-values
-#accuracies = [bestacc, bestacc2, bestacc3, bestacc4]  # y-values
-#plt.plot(sizes, accuracies)
-#plt.xlabel("Sample Size")
-#plt.ylabel("Accuracy")
-#plt.title("Sample Size x Accuracy Plot")
-#plt.show()
 
 y_pred = bestSvclassifier.predict(X_test)               # test the generated model with the test set
 print(confusion_matrix(y_test,y_pred))              # print the analysis report
