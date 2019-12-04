@@ -74,7 +74,8 @@ print(len(Xs_train2))
 print(len(Xs_train3))
 
 # C_list = [0.1, 1, 2, 3, 4, 5, 10]
-C_list = [0.1, 1, 2, 10]
+# C_list = [0.1, 1, 2, 10]
+C_list = [0.1]
 best_err = 1.1  # Any value greater than 1
 best_err2 = 1.1
 best_err3 = 1.1
@@ -83,6 +84,15 @@ best_C = 0.0
 best_C2 = 0.0
 best_C3 = 0.0
 best_C4 = 0.0
+
+tp = list()
+tn = list()
+fp = list()
+fn = list()
+tpt = 0
+tnt = 0
+fpt = 0
+fnt = 0
 
 #Hyperparameter tuning for C in SVM using training/validation/test
 for C in C_list:
@@ -108,6 +118,20 @@ for C in C_list:
     y_pred4 = svclassifier4.predict(Xs_val4)
     err4 = np.mean(ys_val4 != np.array([y_pred4]).T)
 
+    for i in range(0, len(ys_val)):
+        if ys_val[i] == 2 and np.array([y_pred]).T[i] == 2:
+            tpt += 1
+        elif ys_val[i] == 2 and np.array([y_pred]).T[i] == 1:
+            fnt += 1
+        elif ys_val[i] == 1 and np.array([y_pred]).T[i] == 1:
+            tnt += 1
+        elif ys_val[i] == 1 and np.array([y_pred]).T[i] == 2:
+            fpt += 1
+    tp.append(tpt)
+    fn.append(fnt)
+    tn.append(tnt)
+    fp.append(fpt)
+
     print("C=", C, ", err=", err)
     print("C=", C, ", err2=", err2)
     print("C=", C, ", err3=", err3)
@@ -125,6 +149,28 @@ for C in C_list:
     if err4 < best_err4:
         best_err4 = err4
         best_C4 = C
+
+i = 0
+fpr = list()  # x-axis
+tpr = list()  # y-axis
+fpr.append(1)
+tpr.append(1)
+for i in range(0, len(fp)):
+    fpr.append(fp[i]/(fp[i] + tn[i]))
+    tpr.append(tp[i]/(tp[i] + fn[i]))
+fpr.append(0)
+tpr.append(0)
+
+auc = np.sum(tpr)/len(tpr) + 0.5 - np.sum(fpr)/len(fpr)
+plt.plot(fpr, tpr, color='red', lw=2, label='ROC (AUC = %0.8f)' % auc)
+plt.xlim([0, 1])
+plt.ylim([0, 1])
+plt.plot([0, 1], [0, 1], linestyle='--')
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rare")
+plt.title("FPR x TPR")
+plt.legend(loc="lower right")
+plt.show()
 
 print("best_C=", best_C)
 print("best_C=", best_C2)
