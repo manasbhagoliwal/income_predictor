@@ -163,18 +163,19 @@ worstSvclassifier3 = 0
 worstSvclassifier4 = 0
 
 #10-k fold cross-validation
-for i in range(0, 6):
-    T = set(range(int(np.floor((800 * i) / 3)), int(np.floor(((800 * (i + 1)) / 3) - 1)) + 1))
-    T2 = set(range(int(np.floor((560 * i) / 3)), int(np.floor(((560 * (i + 1)) / 3) - 1)) + 1))
-    T3 = set(range(int(np.floor((392 * i) / 3)), int(np.floor(((392 * (i + 1)) / 3) - 1)) + 1))
-    T4 = set(range(int(np.floor((274 * i) / 3)), int(np.floor(((274 * (i + 1)) / 3) - 1)) + 1))
+k = 3
+for i in range(0, k):
+    T = set(range(int(np.floor((800 * i) / k)), int(np.floor(((800 * (i + 1)) / k) - 1)) + 1))
+    T2 = set(range(int(np.floor((560 * i) / k)), int(np.floor(((560 * (i + 1)) / k) - 1)) + 1))
+    T3 = set(range(int(np.floor((392 * i) / k)), int(np.floor(((392 * (i + 1)) / k) - 1)) + 1))
+    T4 = set(range(int(np.floor((274 * i) / k)), int(np.floor(((274 * (i + 1)) / k) - 1)) + 1))
     S = set(range(0, 800)) - T
     S2 = set(range(0, 560)) - T2
     S3 = set(range(0, 392)) - T3
     S4 = set(range(0, 274)) - T4
 
     # Sample 1
-    svclassifier.fit(X_train[list(S)], y_train[list(S)])    # SVM learning every partition
+    svclassifier.fit(X_train[list(T)], y_train[list(T)])    # SVM learning every partition
     ypred = svclassifier.predict(X_train[list(S)])
     accuracy = accuracy_score(y_train[list(S)], ypred)
     # Sample 2
