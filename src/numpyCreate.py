@@ -64,9 +64,9 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
 
 # Split the 70% into two train and validation
 Xs_train, Xs_val, ys_train, ys_val = train_test_split(X_train, y_train, test_size=0.30)
-Xs_train2, Xs_val2, ys_train2, ys_val2 = train_test_split(Xs_train[:100], ys_train[:100], test_size=0.30)
-Xs_train3, Xs_val3, ys_train3, ys_val3 = train_test_split(Xs_train[:50], ys_train2[:50], test_size=0.30)
-Xs_train4, Xs_val4, ys_train4, ys_val4 = train_test_split(Xs_train[:10], ys_train[:10], test_size=0.30)
+Xs_train2, Xs_val2, ys_train2, ys_val2 = train_test_split(Xs_train[:200], ys_train[:200], test_size=0.30)
+Xs_train3, Xs_val3, ys_train3, ys_val3 = train_test_split(Xs_train[:100], ys_train2[:100], test_size=0.30)
+Xs_train4, Xs_val4, ys_train4, ys_val4 = train_test_split(Xs_train[:50], ys_train[:50], test_size=0.30)
 
 print(len(X_train))
 print(len(Xs_train))
