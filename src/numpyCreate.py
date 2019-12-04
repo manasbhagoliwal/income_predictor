@@ -65,9 +65,10 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
 
 # Split the 70% into two train and validation
 Xs_train, Xs_val, ys_train, ys_val = train_test_split(X_train, y_train, test_size=0.30)
-Xs_train2, Xs_val2, ys_train2, ys_val2 = train_test_split(Xs_train, ys_train, test_size=0.30)
-Xs_train3, Xs_val3, ys_train3, ys_val3 = train_test_split(Xs_train2, ys_train2, test_size=0.30)
-Xs_train4, Xs_val4, ys_train4, ys_val4 = train_test_split(Xs_train3, ys_train3, test_size=0.30)
+Xs_train2, Xs_val2, ys_train2, ys_val2 = train_test_split(Xs_train[:100], ys_train[:100], test_size=0.30)
+Xs_train3, Xs_val3, ys_train3, ys_val3 = train_test_split(Xs_train[:50], ys_train2[:50], test_size=0.30)
+Xs_train4, Xs_val4, ys_train4, ys_val4 = train_test_split(Xs_train[:10], ys_train[:10], test_size=0.30)
+
 
 print(len(X_train))
 print(len(Xs_train))
@@ -75,7 +76,7 @@ print(len(Xs_train2))
 print(len(Xs_train3))
 
 # C_list = [0.1, 1, 2, 3, 4, 5, 10]
-C_list = [0.1, 1, 2]
+C_list = [0.1]
 best_err = 1.1  # Any value greater than 1
 best_err2 = 1.1
 best_err3 = 1.1
@@ -136,6 +137,26 @@ svclassifier2 = SVC(kernel='linear', C=best_C2)
 svclassifier3 = SVC(kernel='linear', C=best_C3)
 svclassifier4 = SVC(kernel='linear', C=best_C4)
 
+svclassifier.fit(X_train, y_train)
+svclassifier2.fit(Xs_train, ys_train)
+svclassifier3.fit(Xs_train2, ys_train2)
+svclassifier4.fit(Xs_train3, ys_train3)
+y_score = svclassifier.score(X_test, y_test)
+y_score2 = svclassifier2.score(X_test, y_test)
+y_score3 = svclassifier3.score(X_test, y_test)
+y_score4 = svclassifier4.score(X_test, y_test)
+
+# Print sample size vs accuracy graph
+sizes = [len(X_train), len(Xs_train), len(Xs_train2), len(Xs_train3)]  # x-values
+accuracies = [y_score, y_score2, y_score3, y_score4]  # y-values
+plt.plot(sizes, accuracies)
+plt.xlabel("Sample Size")
+plt.ylabel("Accuracy")
+plt.title("Sample Size x Accuracy Plot")
+plt.show()
+
+
+
 
 #  kfold = KFold(3, True, 1)
 #  for train, test in kfold.split(X_train):
@@ -163,32 +184,36 @@ worstSvclassifier3 = 0
 worstSvclassifier4 = 0
 
 #10-k fold cross-validation
-for i in range(0, 6):
+for i in range(0, 5):
     T = set(range(int(np.floor((800 * i) / 3)), int(np.floor(((800 * (i + 1)) / 3) - 1)) + 1))
     T2 = set(range(int(np.floor((560 * i) / 3)), int(np.floor(((560 * (i + 1)) / 3) - 1)) + 1))
-    T3 = set(range(int(np.floor((392 * i) / 3)), int(np.floor(((392 * (i + 1)) / 3) - 1)) + 1))
-    T4 = set(range(int(np.floor((274 * i) / 3)), int(np.floor(((274 * (i + 1)) / 3) - 1)) + 1))
+    T3 = set(range(int(np.floor((70 * i) / 3)), int(np.floor(((70 * (i + 1)) / 3) - 1)) + 1))
+    T4 = set(range(int(np.floor((35 * i) / 3)), int(np.floor(((35 * (i + 1)) / 3) - 1)) + 1))
     S = set(range(0, 800)) - T
     S2 = set(range(0, 560)) - T2
-    S3 = set(range(0, 392)) - T3
-    S4 = set(range(0, 274)) - T4
+    S3 = set(range(0, 70)) - T3
+    S4 = set(range(0, 35)) - T4
 
     # Sample 1
     svclassifier.fit(X_train[list(S)], y_train[list(S)])    # SVM learning every partition
     ypred = svclassifier.predict(X_train[list(S)])
-    accuracy = accuracy_score(y_train[list(S)], ypred)
+    # accuracy = accuracy_score(y_train[list(S)], ypred)
+    accuracy = svclassifier.score(X_train[list(S)], y_train[list(S)])
     # Sample 2
     svclassifier2.fit(Xs_train[list(S2)], ys_train[list(S2)])    # SVM learning every partition
     ypred2 = svclassifier2.predict(Xs_train[list(S2)])
-    accuracy2 = accuracy_score(ys_train[list(S2)], ypred2)
+    # accuracy2 = accuracy_score(ys_train[list(S2)], ypred2)
+    accuracy2 = svclassifier2.score(Xs_train[list(S2)], ys_train[list(S2)])
     # Sample 3
     svclassifier3.fit(Xs_train2[list(S3)], ys_train2[list(S3)])    # SVM learning every partition
     ypred3 = svclassifier3.predict(Xs_train2[list(S3)])
-    accuracy3 = accuracy_score(ys_train2[list(S3)], ypred3)
+    # accuracy3 = accuracy_score(ys_train2[list(S3)], ypred3
+    accuracy3 = svclassifier3.score(Xs_train2[list(S3)], ys_train2[list(S3)])
     # Sample 4
     svclassifier4.fit(Xs_train3[list(S4)], ys_train3[list(S4)])    # SVM learning every partition
     ypred4 = svclassifier4.predict(Xs_train3[list(S4)])
-    accuracy4 = accuracy_score(ys_train3[list(S4)], ypred4)
+    # accuracy4 = accuracy_score(ys_train3[list(S4)], ypred4)
+    accuracy4 = svclassifier4.score(Xs_train3[list(S4)], ys_train3[list(S4)])
 
     if accuracy > bestacc:
         bestacc = accuracy
