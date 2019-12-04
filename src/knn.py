@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import sklearn
 from sklearn.metrics import roc_curve, auc, roc_auc_score
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
@@ -67,17 +68,17 @@ y = np.asarray(y).astype(int)
 #           KNN Implementation
 
 #           First find the best k for knn
-k_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-          31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
+k_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
 # Split the data(70/30) into training and test sets
 X_big, X_test, y_big, y_test = train_test_split(X, y, test_size=0.30)
 
 # Spilt the 70% into two train and validation
 X_train, X_val, y_train, y_val = train_test_split(X_big, y_big, test_size=0.30)
-X_train2, X_val2, y_train2, y_val2 = train_test_split(X_train, y_train, test_size=0.30)
-X_train3, X_val3, y_train3, y_val3 = train_test_split(X_train2, y_train2, test_size=0.30)
-X_train4, X_val4, y_train4, y_val4 = train_test_split(X_train3, y_train3, test_size=0.30)
+X_train2, X_val2, y_train2, y_val2 = train_test_split(X_train[:400], y_train[:400], test_size=0.30)
+X_train3, X_val3, y_train3, y_val3 = train_test_split(X_train[:300], y_train[:300], test_size=0.30)
+X_train4, X_val4, y_train4, y_val4 = train_test_split(X_train[:230], y_train[:230], test_size=0.30)
+print(len(X_train))
 
 best_err = 1.1  # Any value greater than 1
 best_err2 = 1.1  # Any value greater than 1
@@ -88,6 +89,15 @@ best_k = 0.0
 best_k2 = 0.0
 best_k3 = 0.0
 best_k4 = 0.0
+
+tp = list()
+tn = list()
+fp = list()
+fn = list()
+tpt = 0
+tnt = 0
+fpt = 0
+fnt = 0
 
 for k in k_list:
     alg = KNeighborsClassifier(n_neighbors=k, algorithm='brute')
@@ -112,6 +122,20 @@ for k in k_list:
     y_pred4 = alg4.predict(X_val4)
     err4 = np.mean(y_val4 != np.array([y_pred4]).T)
 
+    for i in range(0, len(y_val)):
+        if y_val[i] == 2 and np.array([y_pred]).T[i] == 2:
+            tpt += 1
+        elif y_val[i] == 2 and np.array([y_pred]).T[i] == 1:
+            fnt += 1
+        elif y_val[i] == 1 and np.array([y_pred]).T[i] == 1:
+            tnt += 1
+        elif y_val[i] == 1 and np.array([y_pred]).T[i] == 2:
+            fpt += 1
+    tp.append(tpt)
+    fn.append(fnt)
+    tn.append(tnt)
+    fp.append(fpt)
+
     print("k=", k, ", err=", err)
     print("k=", k, ", err2=", err2)
     print("k=", k, ", err3=", err3)
@@ -129,43 +153,74 @@ for k in k_list:
         best_err4 = err4
         best_k4 = k
 
-fpr = dict()
-tpr = dict()
-roc_auc = dict()
+i = 0
+x = np.linspace(0, 1, num=100)
+fpr = list()  # x-axis
+tpr = list()  # y-axis
+for i in range(0, k):
+    fpr.append(fp[i]/(fp[i] + tn[i]))
+    tpr.append(tp[i]/(tp[i] + fn[i]))
+fpr.append(0)
+fpr.append(1)
+tpr.append(0)
+tpr.append(1)
+auc = np.sum(tpr)/len(tpr)
+print(auc, fpr, tpr)
 
-# Compute ROC curve and ROC area for each class
-for i in range(0, 2):
-    fpr[i], tpr[i], labels = roc_curve(y_val, y_pred, 1+i)
-    roc_auc[i] = auc(fpr[i], tpr[i])
+plt.plot(fpr, tpr, color='red', lw=2, label='ROC (AUC = %0.8f)' % auc)
+# plt.plot(0, 0)
+# # plt.plot(1, 1)
+plt.plot(x, x, "--")
+plt.xlim([0, 1])
+plt.ylim([0, 1])
+# plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rare")
+plt.title("FPR x TPR")
+plt.grid()
+plt.show()
 
-print("kkkkkkkk")
+# auc = sklearn.metrics.auc(fpr, tpr)
+print(fpr)
+# print(auc)
 
-print(y_test)
-
-print("kkkkkkkk")
-
-print(y_pred)
-
-print(fpr, " auuuu ", tpr)
-print(roc_auc)
+# fpr = dict()
+# tpr = dict()
+# roc_auc = dict()
+#
+# # Compute ROC curve and ROC area for each class
+# for i in range(0, 2):
+#     fpr[i], tpr[i], labels = roc_curve(y_val, y_pred, 1+i)
+#     roc_auc[i] = auc(fpr[i], tpr[i])
+#
+# print("kkkkkkkk")
+#
+# print(y_test)
+#
+# print("kkkkkkkk")
+#
+# print(y_pred)
+#
+# print(fpr, " auuuu ", tpr)
+# print(roc_auc)
 
 # Compute micro-average ROC curve and ROC area
-fpr["micro"], tpr["micro"], _ = roc_curve(y_val.ravel(), y_pred.ravel(), 2)
-roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
+# fpr["micro"], tpr["micro"], _ = roc_curve(y_val.ravel(), y_pred.ravel(), 2)
+# roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
 
-print(roc_auc)
-
-plt.figure()
-lw = 2
-plt.plot(fpr[1], tpr[1], color='red', lw=lw, label='ROC curve (area = %0.8f)' % roc_auc[1])
-plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
-plt.xlim([0.0, 1.0])
-plt.ylim([0.0, 1.05])
-plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive Rate')
-plt.title('Receiver Operating Characteristic (ROC)')
-plt.legend(loc="lower right")
-plt.show()
+# print(roc_auc)
+#
+# plt.figure()
+# lw = 2
+# plt.plot(fpr[1], tpr[1], color='red', lw=lw, label='ROC curve (area = %0.8f)' % roc_auc[1])
+# plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+# plt.xlim([0.0, 1.0])
+# plt.ylim([0.0, 1.05])
+# plt.xlabel('False Positive Rate')
+# plt.ylabel('True Positive Rate')
+# plt.title('Receiver Operating Characteristic (ROC)')
+# plt.legend(loc="lower right")
+# plt.show()
 
 print("best_k=", best_k)
 print("best_k2=", best_k2)
@@ -178,8 +233,17 @@ alg3 = KNeighborsClassifier(n_neighbors=best_k3, algorithm='brute')
 alg4 = KNeighborsClassifier(n_neighbors=best_k4, algorithm='brute')
 
 alg.fit(X_train, y_train)
-# probs = alg.predict_proba(X_test)
-# probs = probs[:, 1]
+probs = alg.predict_proba(X_test)
+print("wejdwned")
+print(probs)
+
+probs = probs[:, 1]
+
+print(probs)
+
+
+
+
 y_pred = alg.predict(X_test)
 err = np.mean(y_test != np.array([y_pred]).T)
 
@@ -217,10 +281,10 @@ print(err4)
 
 
 # Split the data(80/20) into training and test sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
-X_train2, X_test2, y_train2, y_test2 = train_test_split(X_train, y_train, test_size=0.20)
-X_train3, X_test3, y_train3, y_test3 = train_test_split(X_train2, y_train2, test_size=0.20)
-X_train4, X_test4, y_train4, y_test4 = train_test_split(X_train3, y_train3, test_size=0.20)
+# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
+# X_train2, X_test2, y_train2, y_test2 = train_test_split(X_train[:500], y_train[:500], test_size=0.20)
+# X_train3, X_test3, y_train3, y_test3 = train_test_split(X_train[:250], y_train[:250], test_size=0.20)
+# X_train4, X_test4, y_train4, y_test4 = train_test_split(X_train[:200], y_train[:200], test_size=0.20)
 
 # Create KNN classifier
 knn = KNeighborsClassifier(n_neighbors=best_k, algorithm='brute')
@@ -257,14 +321,14 @@ for i in range(0, k):
     S2 = set(range(0, n2)) - T2
     S3 = set(range(0, n3)) - T3
     S4 = set(range(0, n4)) - T4
-    temp_model = knn.fit(X_train[list(S)], y_train[list(S)])
-    temp_model2 = knn2.fit(X_train2[list(S2)], y_train2[list(S2)])
-    temp_model3 = knn3.fit(X_train3[list(S3)], y_train3[list(S3)])
-    temp_model4 = knn4.fit(X_train4[list(S4)], y_train4[list(S4)])
-    sc = knn.score(X_train[list(T)], y_train[list(T)])
-    sc2 = knn2.score(X_train2[list(T2)], y_train2[list(T2)])
-    sc3 = knn3.score(X_train3[list(T3)], y_train3[list(T3)])
-    sc4 = knn4.score(X_train4[list(T4)], y_train4[list(T4)])
+    temp_model = knn.fit(X_train[list(T)], y_train[list(T)])
+    temp_model2 = knn2.fit(X_train2[list(T2)], y_train2[list(T2)])
+    temp_model3 = knn3.fit(X_train3[list(T3)], y_train3[list(T3)])
+    temp_model4 = knn4.fit(X_train4[list(T4)], y_train4[list(T4)])
+    sc = knn.score(X_train[list(S)], y_train[list(S)])
+    sc2 = knn2.score(X_train2[list(S2)], y_train2[list(S2)])
+    sc3 = knn3.score(X_train3[list(S3)], y_train3[list(S3)])
+    sc4 = knn4.score(X_train4[list(S4)], y_train4[list(S4)])
 
     if sc > best_score:
         bfoldknn = temp_model
@@ -321,6 +385,7 @@ print(np.mean(npscores4))
 # Print sample size vs accuracy graph
 sizes = [len(X_train), len(X_train2), len(X_train3), len(X_train4)]  # x-values
 accuracies = [np.mean(npscores), np.mean(npscores2), np.mean(npscores3), np.mean(npscores4)]  # y-values
+# accuracies = [final_score, final_score2, final_score3, final_score4]  # y-values
 plt.plot(sizes, accuracies)
 plt.xlabel("Sample Size")
 plt.ylabel("Accuracy")
@@ -332,7 +397,7 @@ auc = roc_auc_score(y_test, probs)
 print('Model: ROC AUC=%.7f' % auc)
 fpr, tpr, _ = roc_curve(y_test, probs, 2)
 plt.plot(fpr, tpr, marker='.', label='Model')
-plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
 plt.xlim([0.0, 1.0])
 plt.ylim([0.0, 1.05])
 plt.xlabel('False Positive Rate')
