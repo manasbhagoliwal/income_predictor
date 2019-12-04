@@ -5,10 +5,7 @@ from sklearn.metrics import roc_curve, auc, roc_auc_score
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 import matplotlib.pyplot as plt
-from sklearn.model_selection import cross_val_score
 
-from random import seed
-from random import randrange
 
 dataclean = np.genfromtxt("../data/adult.data.cleaned2", dtype='str')
 a = np.zeros((1001, 15))  # we need 'a' to create string numpy 'A' out of it
@@ -55,9 +52,7 @@ df_replace['capital-gain'] = df_replace['capital-gain'].str.replace(',', '')
 df_replace['capital-loss'] = df_replace['capital-loss'].str.replace(',', '')
 df_replace['hours-per-week'] = df_replace['hours-per-week'].str.replace(',', '')
 df_replace.astype('int64').dtypes
-print(df_replace)
-# print(df_replace.info())  good for debug!!!
-# print(df_replace.dtypes) good for debug!!!
+# print(df_replace)
 
 df_replace_transposed = df_replace.values.T
 y = df_replace_transposed[14]
@@ -65,7 +60,16 @@ X = df_replace.values[:1000, :14]
 X = np.asarray(X).astype(int)
 y = np.asarray(y).astype(int)
 
+
+
+
+
 #           KNN Implementation
+
+
+
+
+
 
 #           First find the best k for knn
 k_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
@@ -78,7 +82,6 @@ X_train, X_val, y_train, y_val = train_test_split(X_big, y_big, test_size=0.30)
 X_train2, X_val2, y_train2, y_val2 = train_test_split(X_train[:400], y_train[:400], test_size=0.30)
 X_train3, X_val3, y_train3, y_val3 = train_test_split(X_train[:300], y_train[:300], test_size=0.30)
 X_train4, X_val4, y_train4, y_val4 = train_test_split(X_train[:230], y_train[:230], test_size=0.30)
-print(len(X_train))
 
 best_err = 1.1  # Any value greater than 1
 best_err2 = 1.1  # Any value greater than 1
@@ -135,11 +138,11 @@ for k in k_list:
     fn.append(fnt)
     tn.append(tnt)
     fp.append(fpt)
-
-    print("k=", k, ", err=", err)
-    print("k=", k, ", err2=", err2)
-    print("k=", k, ", err3=", err3)
-    print("k=", k, ", err4=", err4)
+# print the error for each sample size and each value of k
+#    print("k=", k, ", err=", err)
+#    print("k=", k, ", err2=", err2)
+#    print("k=", k, ", err3=", err3)
+#    print("k=", k, ", err4=", err4)
     if err < best_err:
         best_err = err
         best_k = k
@@ -165,7 +168,7 @@ fpr.append(1)
 tpr.append(0)
 tpr.append(1)
 auc = np.sum(tpr)/len(tpr)
-print(auc, fpr, tpr)
+# print(auc, fpr, tpr)
 
 plt.plot(fpr, tpr, color='red', lw=2, label='ROC (AUC = %0.8f)' % auc)
 # plt.plot(0, 0)
@@ -181,7 +184,7 @@ plt.grid()
 plt.show()
 
 # auc = sklearn.metrics.auc(fpr, tpr)
-print(fpr)
+#print(fpr)
 # print(auc)
 
 # fpr = dict()
@@ -222,11 +225,13 @@ print(fpr)
 # plt.legend(loc="lower right")
 # plt.show()
 
-print("best_k=", best_k)
-print("best_k2=", best_k2)
-print("best_k3=", best_k3)
-print("best_k4=", best_k4)
+print("best_k for sample 1 = ", best_k)
+print("best_k for sample 2 = ", best_k2)
+print("best_k for sample 3 = ", best_k3)
+print("best_k for sample 4 = ", best_k4)
 
+
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Look at this box >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 alg = KNeighborsClassifier(n_neighbors=best_k, algorithm='brute')
 alg2 = KNeighborsClassifier(n_neighbors=best_k2, algorithm='brute')
 alg3 = KNeighborsClassifier(n_neighbors=best_k3, algorithm='brute')
@@ -234,12 +239,12 @@ alg4 = KNeighborsClassifier(n_neighbors=best_k4, algorithm='brute')
 
 alg.fit(X_train, y_train)
 probs = alg.predict_proba(X_test)
-print("wejdwned")
-print(probs)
+# print("wejdwned")
+#print(probs)
 
 probs = probs[:, 1]
 
-print(probs)
+#print(probs)
 
 
 
@@ -256,12 +261,14 @@ err3 = np.mean(y_test != np.array([y_pred3]).T)
 alg4.fit(X_train4, y_train4)
 y_pred4 = alg4.predict(X_test)
 err4 = np.mean(y_test != np.array([y_pred4]).T)
+print("Do we need this print>>>>>")
 
 print(err)
 print(err2)
 print(err3)
 print(err4)
 
+print("^^^^^^^^^Do we need this print?^^^^^^^^^^^^")
 
 # auc = roc_auc_score(y_test, probs)
 # print('Model: ROC AUC=%.7f' % auc)
@@ -277,14 +284,10 @@ print(err4)
 # plt.show()
 
 
+#       <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Box ends >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 #  K fold cross validation using the best k found above
 
-
-# Split the data(80/20) into training and test sets
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
-# X_train2, X_test2, y_train2, y_test2 = train_test_split(X_train[:500], y_train[:500], test_size=0.20)
-# X_train3, X_test3, y_train3, y_test3 = train_test_split(X_train[:250], y_train[:250], test_size=0.20)
-# X_train4, X_test4, y_train4, y_test4 = train_test_split(X_train[:200], y_train[:200], test_size=0.20)
 
 # Create KNN classifier
 knn = KNeighborsClassifier(n_neighbors=best_k, algorithm='brute')
@@ -297,15 +300,17 @@ knn4 = KNeighborsClassifier(n_neighbors=best_k4, algorithm='brute')
 (n3, d3) = np.shape(X_train3)
 (n4, d4) = np.shape(X_train4)
 k = 10
-# a list which carries the score from each kfolds
+# lists which carries the score from each kfold for the four sample size
 scores_kfold = list()
 scores_kfold2 = list()
 scores_kfold3 = list()
 scores_kfold4 = list()
+# best score found
 best_score = 0.0
 best_score2 = 0.0
 best_score3 = 0.0
 best_score4 = 0.0
+# the corresponding best model is saved for future use
 bfoldknn = 0.0
 bfoldknn2 = 0.0
 bfoldknn3 = 0.0
@@ -321,15 +326,19 @@ for i in range(0, k):
     S2 = set(range(0, n2)) - T2
     S3 = set(range(0, n3)) - T3
     S4 = set(range(0, n4)) - T4
+    # T and S are complementary
+    # train/fit with list(T)
     temp_model = knn.fit(X_train[list(T)], y_train[list(T)])
     temp_model2 = knn2.fit(X_train2[list(T2)], y_train2[list(T2)])
     temp_model3 = knn3.fit(X_train3[list(T3)], y_train3[list(T3)])
     temp_model4 = knn4.fit(X_train4[list(T4)], y_train4[list(T4)])
+    # check the accuracy with list(S)
     sc = knn.score(X_train[list(S)], y_train[list(S)])
     sc2 = knn2.score(X_train2[list(S2)], y_train2[list(S2)])
     sc3 = knn3.score(X_train3[list(S3)], y_train3[list(S3)])
     sc4 = knn4.score(X_train4[list(S4)], y_train4[list(S4)])
 
+    # if the score is best for that sample size in kfold, save the model and score
     if sc > best_score:
         bfoldknn = temp_model
         best_score = sc
@@ -349,38 +358,30 @@ for i in range(0, k):
     scores_kfold4.append(sc4)
 
 # Print each cv score (accuracy) and average them
-
-probs = knn.predict_proba(X_test)
-probs = probs[:, 1]
-
-print(scores_kfold)
-print(scores_kfold2)
-print(scores_kfold3)
-print(scores_kfold4)
-final_score = bfoldknn.score(X_test, y_test)
-final_score2 = bfoldknn2.score(X_test, y_test)
-final_score3 = bfoldknn3.score(X_test, y_test)
-final_score4 = bfoldknn4.score(X_test, y_test)
-print("Final score = ", final_score)
-print("Final score2 = ", final_score2)
-print("Final score3 = ", final_score3)
-print("Final score4 = ", final_score4)
 npscores = np.asarray(scores_kfold)
 npscores2 = np.asarray(scores_kfold2)
 npscores3 = np.asarray(scores_kfold3)
 npscores4 = np.asarray(scores_kfold4)
 
-print(npscores)
-print(npscores2)
-print(npscores3)
-print(npscores4)
-
 
 # printing the mean score which represents how our model will perform on new data
-print(np.mean(npscores))
-print(np.mean(npscores2))
-print(np.mean(npscores3))
-print(np.mean(npscores4))
+print(" mean accuracy on kfoldcv for sample 1 = ",np.mean(npscores))
+print(" mean accuracy on kfoldcv for sample 2 = ",np.mean(npscores2))
+print(" mean accuracy on kfoldcv for sample 3 = ",np.mean(npscores3))
+print(" mean accuracy on kfoldcv for sample 4 = ",np.mean(npscores4))
+
+print("--------------------------------------------------------------")
+# Final score is based on the best k found and best model found in the kfold cv
+final_score = bfoldknn.score(X_test, y_test)
+final_score2 = bfoldknn2.score(X_test, y_test)
+final_score3 = bfoldknn3.score(X_test, y_test)
+final_score4 = bfoldknn4.score(X_test, y_test)
+print("best accuracy in kfoldcv for sample 1 =", final_score)
+print("best accuracy in kfoldcv for sample 1 =", final_score2)
+print("best accuracy in kfoldcv for sample 1 =", final_score3)
+print("best accuracy in kfoldcv for sample 1 =", final_score4)
+
+
 
 # Print sample size vs accuracy graph
 sizes = [len(X_train), len(X_train2), len(X_train3), len(X_train4)]  # x-values
@@ -393,6 +394,9 @@ plt.title("Sample Size x Accuracy Plot")
 plt.show()
 
 
+
+
+# printing the ROC curve
 auc = roc_auc_score(y_test, probs)
 print('Model: ROC AUC=%.7f' % auc)
 fpr, tpr, _ = roc_curve(y_test, probs, 2)
